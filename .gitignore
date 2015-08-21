@@ -1,0 +1,4 @@
+*.o
+*.swp
+json_test
+*.a
