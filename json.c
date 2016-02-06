@@ -163,7 +163,7 @@ json_obj_t * json_read_object(json_obj_t * parent, json_context_t *ctx ) {
   self = json_get_object(ctx);
   self->type = JSON_OBJECT;
   self->parent = parent;
-  self->str = &(ctx->source[ctx->cursor]);
+  self->str = &(ctx->source[start_pos]);
 
   json_obj_t *previous_value = NULL;
 
@@ -185,6 +185,7 @@ json_obj_t * json_read_object(json_obj_t * parent, json_context_t *ctx ) {
           goto err;
         }
         //printf("%.*s\n",kv->length, kv->str);
+        //TODO: add kv->key + kv->value to a hash + implement lookup
         json_add_to_children(self, previous_value, kv);
         previous_value = kv;
         break;

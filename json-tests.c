@@ -54,6 +54,30 @@ static int read_json_file(char ** buf, char * filename){
 
 #define TEST_FILE_1 "fixtures/mock.json" 
 
+int test_read_array(){
+
+  char * js_str = "[{\"apa\": \"123\"},{\"apa\": \"123\"},{\"apa\": \"123\"},{\"apa\": \"123\"},{\"apa\": \"123\"}]";
+  json_context_t ctx;
+  int init = json_init_context(&ctx, js_str);
+  check(init == 0);
+
+  json_obj_t *parent = NULL;
+
+  json_obj_t *res;
+
+  res = json_read_array(parent, &ctx);
+
+  json_obj_t * iterator = res->children;
+  while(iterator != NULL){
+    check(strncmp(iterator->str, "{\"apa\": \"123\"}", iterator->length) == 0);
+    iterator = iterator->next_sibling;
+  }
+
+  json_object_destroy(res, &ctx);
+
+  return 0;
+}
+
 int test_read_object(){
 
   char * js_str = "{\"apa\": {\"gnu\": 321}, \"lennart\": "
@@ -340,6 +364,7 @@ int test_json_object_each(){
 }
 
 int main() {
+  test(test_read_array, "test reading json array");
   test(test_read_object, "test reading json object");
   test(test_read_invalid_object, "test reading invalid json object");
   test(test_read_invalid_primitive, "test reading invalid json primitive");
