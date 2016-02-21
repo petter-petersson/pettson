@@ -80,6 +80,7 @@ json_obj_t * json_get_object(json_context_t *ctx){
   if (ret == 0) abort();
 
   ret->children = NULL;
+  ret->last_child = NULL;
   ret->next_sibling = NULL;
   ret->parent = NULL;
   ret->length = 0;
@@ -109,7 +110,7 @@ void json_object_destroy(json_obj_t *obj, json_context_t *ctx){
   ctx->object_retained++;
 }
 
-void json_add_to_children(json_obj_t *parent, json_obj_t * previous, json_obj_t * obj) {
+void json_add_to_children(json_obj_t *parent, json_obj_t * obj) {
   if(obj == NULL){
     fprintf(stderr, "json_add_to_children: object is null");
     return;
@@ -120,32 +121,15 @@ void json_add_to_children(json_obj_t *parent, json_obj_t * previous, json_obj_t 
 
   if (parent->children == NULL) {
     parent->children = obj;
+    parent->last_child = obj;
     parent->size++;
     return;
   }
 
-  //NOTE this is an optimization that can backfire if input is bad
-  if(previous != NULL){
-    //not failproof validation but something
-    assert(previous->parent != NULL && obj->parent != NULL &&
-           previous->parent == parent);
-
-    previous->next_sibling = obj;
-    parent->size++;
-    return;
-  }
-
-  /* we dont have last element in chain so we iterate */
-  json_obj_t *iterator = parent->children;
-
-  while(1){
-    if(iterator->next_sibling == NULL){
-      iterator->next_sibling = obj;
-      parent->size++;
-      return;
-    }
-    iterator = iterator->next_sibling;
-  }
+  //last_child should not be null here - what if?
+  parent->last_child->next_sibling = obj;
+  parent->last_child = obj;
+  parent->size++;
   return;
 }
 
@@ -165,8 +149,6 @@ json_obj_t * json_read_object(json_obj_t * parent, json_context_t *ctx ) {
   self->parent = parent;
   self->str = &(ctx->source[start_pos]);
 
-  json_obj_t *previous_value = NULL;
-
   while(1){
 
     c = ctx->source[ctx->cursor];
@@ -185,9 +167,7 @@ json_obj_t * json_read_object(json_obj_t * parent, json_context_t *ctx ) {
           goto err;
         }
         //printf("%.*s\n",kv->length, kv->str);
-        //TODO: add kv->key + kv->value to a hash + implement lookup
-        json_add_to_children(self, previous_value, kv);
-        previous_value = kv;
+        json_add_to_children(self, kv);
         break;
 
       case '}':
@@ -235,7 +215,6 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx ){
 
   bool have_comma = true; //first element
 
-  json_obj_t *previous_value = NULL;
   while(1){
 
     c = ctx->source[ctx->cursor];
@@ -258,8 +237,7 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx ){
           print_error("Did not receive value.", __LINE__, ctx);
           goto err;
         }
-        json_add_to_children(self, previous_value, val);
-        previous_value = val; 
+        json_add_to_children(self, val);
         break;
       
       case '{':
@@ -274,8 +252,7 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx ){
           print_error("Did not receive value.", __LINE__, ctx);
           goto err;
         }
-        json_add_to_children(self, previous_value, val);
-        previous_value = val; 
+        json_add_to_children(self, val);
         break;
 
       case ']':
@@ -301,8 +278,7 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx ){
           print_error("Did not receive value.", __LINE__, ctx);
           goto err;
         }
-        json_add_to_children(self, previous_value, val);
-        previous_value = val; 
+        json_add_to_children(self, val);
         break;
     }
 

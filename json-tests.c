@@ -186,23 +186,22 @@ int test_add_to_children(){
 
   json_obj_t * parent = json_get_object(&ctx);
 
-  json_obj_t * previous = NULL;
-  for( int i = 0; i < 50000; i++ ){
+  for( int i = 0; i < 500000; i++ ){
 
     json_obj_t * obj = json_get_object(&ctx);
     obj->type = JSON_OBJECT;
 
-    json_add_to_children(parent, previous, obj);
-    previous = obj;
+    json_add_to_children(parent, obj);
   }
 
   int counter = 0;
   json_object_destroy(parent, &ctx);
 
-  check(ctx.object_retained == 50001);
+  check(ctx.object_retained == 500001);
   return 0;
 }
 
+/* obsolete */
 int test_add_to_children_without_end_reference(){
 
   char * js_str = "{}";
@@ -214,7 +213,7 @@ int test_add_to_children_without_end_reference(){
   for( int i = 0; i < 500; i++ ){
     json_obj_t * obj = json_get_object(&ctx);
     obj->type = JSON_OBJECT;
-    json_add_to_children(parent, NULL, obj);
+    json_add_to_children(parent, obj);
   }
 
   int counter = 0;

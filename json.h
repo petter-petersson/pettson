@@ -15,6 +15,7 @@ struct json_obj_s {
   json_type_t type;
   int size; //num children
   struct json_obj_s *children;
+  struct json_obj_s *last_child;
   struct json_obj_s *next_sibling; 
   struct json_obj_s *parent;
 };
@@ -44,7 +45,7 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx );
 
 int json_read_esc_char(json_context_t * ctx);
 
-void json_add_to_children(json_obj_t *parent, json_obj_t * previous, json_obj_t * obj);
+void json_add_to_children(json_obj_t *parent, json_obj_t * obj);
 json_obj_t * json_get_object(json_context_t *ctx);
 
 void print_error(char * msg, int lineno, json_context_t *ctx);
