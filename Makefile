@@ -2,7 +2,7 @@
 
 LDFLAGS=-L.
 LIBS=-lpettson
-CFLAGS=-std=c99                
+override CFLAGS+=-std=c99                
 
 all: libpettson.a              
 
