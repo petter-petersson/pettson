@@ -32,9 +32,6 @@ static int read_json_file(char ** buf, char * filename){
   printf("file size: %lld \n", st.st_size);
 
   *buf = malloc(sizeof(char) * (st.st_size + 1));
-  //*buf = calloc((st.st_size + 1), sizeof(char));
-  //memset(*buf, 0, sizeof(char) * (st.st_size + 1));
-
  
   if(*buf == NULL){
     printf("failed to malloc buf\n");
@@ -68,10 +65,14 @@ int test_read_array(){
   res = json_read_array(parent, &ctx);
 
   json_obj_t * iterator = res->children;
+  int count = 0;
   while(iterator != NULL){
     check(strncmp(iterator->str, "{\"apa\": \"123\"}", iterator->length) == 0);
     iterator = iterator->next_sibling;
+    count++;
   }
+
+  check(count==5);
 
   json_object_destroy(res, &ctx);
 
@@ -198,28 +199,6 @@ int test_add_to_children(){
   json_object_destroy(parent, &ctx);
 
   check(ctx.object_retained == 500001);
-  return 0;
-}
-
-/* obsolete */
-int test_add_to_children_without_end_reference(){
-
-  char * js_str = "{}";
-  json_context_t ctx;
-  check(json_init_context(&ctx, js_str) == 0);
-
-  json_obj_t * parent = json_get_object(&ctx);
-
-  for( int i = 0; i < 500; i++ ){
-    json_obj_t * obj = json_get_object(&ctx);
-    obj->type = JSON_OBJECT;
-    json_add_to_children(parent, obj);
-  }
-
-  int counter = 0;
-  json_object_destroy(parent, &ctx);
-
-  check(ctx.object_retained == 501);
   return 0;
 }
 
@@ -369,7 +348,6 @@ int main() {
   test(test_read_invalid_primitive, "test reading invalid json primitive");
   test(test_init_context, "test init context");
   test(test_add_to_children, "test add to children");
-  test(test_add_to_children_without_end_reference, "test add to children without keeping end node");
   test(test_parse_escape_chars, "test parsing escape chars in string");
   test(test_get_object_attribute, "test getting object attribute");
   test(test_json_parse, "test json_parse");

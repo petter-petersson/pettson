@@ -576,7 +576,6 @@ json_obj_t * json_get_object_attribute(char * key, json_obj_t *obj) {
 
         json_obj_t * k = iterator->children;
         if(k != NULL){
-          //printf("%u: %s - %.*s\n",k->type, key, k->length, k->str);
           if(strncmp(k->str, key, k->length)==0){
             return k->next_sibling;
           }
