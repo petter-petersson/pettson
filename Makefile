@@ -18,6 +18,9 @@ test: json_test
 json_test: json-tests.o libpettson.a
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(LIBS)
 
+sample: sample.o libpettson.a 
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(LIBS)
+
 clean:
 	rm -rf *.o *.a json_test
 
