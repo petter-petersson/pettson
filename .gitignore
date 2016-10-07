@@ -1,4 +1,5 @@
 *.o
 *.swp
 json_test
+sample
 *.a

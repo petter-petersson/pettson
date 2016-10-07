@@ -2,9 +2,8 @@
 A low level json parser written in c.
 
 This parser should ideally be used to populate a hash table or similar intermediate data structure.
-See sample.c for usage.
 
-See json-tests.c for usage
+[See sample.c for usage.](sample.c)
 
 ```c
 
