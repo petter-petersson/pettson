@@ -166,7 +166,6 @@ json_obj_t * json_read_object(json_obj_t * parent, json_context_t *ctx ) {
           print_error("keyvalue pair returned was null", __LINE__, ctx);
           goto err;
         }
-        //printf("%.*s\n",kv->length, kv->str);
         json_add_to_children(self, kv);
         break;
 
@@ -257,7 +256,6 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx ){
 
       case ']':
         self->length = ctx->cursor + 1 - start_pos;
-        //printf("%.*s\n", self->length, self->str);
         return self;
         break;
 
@@ -292,7 +290,6 @@ err:
   return NULL;
 }
 
-/* refactor */
 json_obj_t * json_read_key_value(json_obj_t * parent, json_context_t *ctx ) {
 
   char c;
@@ -408,7 +405,6 @@ finalize_value:
   self->length = ctx->cursor + 1 - start_pos;
   key->next_sibling = value;
   self->children = key;
-  //printf("%.*s\n", self->length, self->str);
   return self;
 }
 
@@ -587,7 +583,3 @@ json_obj_t * json_get_object_attribute(char * key, json_obj_t *obj) {
 
   return NULL;
 }
-
-
-
-
