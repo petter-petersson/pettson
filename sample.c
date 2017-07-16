@@ -27,7 +27,7 @@ static int read_json_file(char ** buf, char * filename){
   return 0;
 }
 
-#define IDENT(ident) ident * 5
+#define INDENT(ident) ident * 5
 
 static void parse_key_value(int indent, json_obj_t * kv);
 static void parse_object(int indent, json_obj_t * object);
@@ -41,7 +41,7 @@ static void parse_key_value(int indent, json_obj_t * kv){
   json_obj_t * key = kv->children;
   json_obj_t * value = kv->children->next_sibling;
 
-  printf("%*s%.*s",IDENT(indent), "",  key->length, key->str);
+  printf("%*s%.*s",INDENT(indent), "",  key->length, key->str);
 
   switch(value->type){
     case JSON_STRING:
@@ -92,10 +92,10 @@ static void parse_array(int indent, json_obj_t * array){
 
     switch(item->type){
       case JSON_STRING:
-        printf("%*s%.*s\n", IDENT(indent), "", item->length, item->str);
+        printf("%*s%.*s\n", INDENT(indent), "", item->length, item->str);
         break;
       case JSON_PRIMITIVE:
-        printf("%*s%.*s\n", IDENT(indent), "", item->length, item->str);
+        printf("%*s%.*s\n", INDENT(indent), "", item->length, item->str);
         break;
       case JSON_OBJECT:
         parse_object(indent, item);
