@@ -33,7 +33,18 @@ typedef struct {
 json_obj_t * json_parse(json_context_t * ctx);
 int json_init_context(json_context_t *ctx, char * js);
 void json_object_destroy(json_obj_t *obj, json_context_t *ctx);
+void json_each_array(
+  json_obj_t * array,
+  void * user_data,
+  void (*callback)(json_obj_t * item, void * user_data)
+  );
+void json_each_object_attribute(
+  json_obj_t * object,
+  void * user_data,
+  void (*callback)(json_obj_t * key, json_obj_t * value, void * user_data)
+  );
 
+/* for testing only, slow and inefficient */
 json_obj_t * json_get_object_attribute(char * key, json_obj_t *obj);
 
 /* private */
@@ -42,12 +53,9 @@ json_obj_t * json_read_key_value(json_obj_t * parent, json_context_t * ctx);
 json_obj_t * json_read_string(json_obj_t * parent, json_context_t *ctx);
 json_obj_t * json_read_primitive(json_obj_t * parent, json_context_t *ctx);
 json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx );
-
 int json_read_esc_char(json_context_t * ctx);
-
 void json_add_to_children(json_obj_t *parent, json_obj_t * obj);
 json_obj_t * json_get_object(json_context_t *ctx);
-
 void print_error(char * msg, int lineno, json_context_t *ctx);
 
 #endif

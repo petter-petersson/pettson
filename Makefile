@@ -2,7 +2,7 @@
 
 LDFLAGS=-L.
 LIBS=-lpettson
-override CFLAGS+=-std=c99                
+override CFLAGS+=-std=c99 -g
 
 all: libpettson.a              
 
@@ -18,10 +18,10 @@ test: json_test
 json_test: json-tests.o libpettson.a
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(LIBS)
 
-sample: sample.o libpettson.a 
+sample: functional/sample.o functional/store.o libpettson.a
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(LIBS)
 
 clean:
-	rm -rf *.o *.a json_test
+	rm -rf **/*.o *.a json_test store_test
 
 .PHONY: all clean test

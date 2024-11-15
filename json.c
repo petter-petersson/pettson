@@ -6,7 +6,6 @@
 #include <string.h>
 #include "json.h"
 
-
 void print_error(char * msg, int lineno, json_context_t *ctx){
   fprintf( stderr, "%s:%d Parse error. Cursor position %d.\n", __FILE__, lineno, ctx->cursor);
   int startpos = ctx->cursor;
@@ -200,7 +199,6 @@ json_obj_t * json_read_array(json_obj_t * parent, json_context_t *ctx ){
 
   char c;
   json_obj_t *val;
-
   
   int start_pos = ctx->cursor; 
 
@@ -365,7 +363,6 @@ json_obj_t * json_read_key_value(json_obj_t * parent, json_context_t *ctx ) {
       case '\t' : case '\r' : case '\n' : case ' ':
         break;
       default:
-        //read_primitive - no support for primitives as key as of now
         if(have_key){
           if (key == NULL) {
             print_error("Key was null.", __LINE__, ctx);
@@ -428,7 +425,6 @@ json_obj_t * json_read_string(json_obj_t * parent, json_context_t *ctx){
   self->type = JSON_STRING;
 
   while(1){
-
     c = ctx->source[ctx->cursor];
     switch(c) {
       case 0:
@@ -558,8 +554,40 @@ json_obj_t * json_read_primitive(json_obj_t * parent, json_context_t *ctx){
 err:
   json_object_destroy(self, ctx);
   return NULL;
-
 }
+
+void json_each_array(json_obj_t * array, void * user_data, void (*callback)(json_obj_t * item, void * user_data)) {
+  if(array->type != JSON_ARRAY){
+    printf("%d: unexpected type %d\n", __LINE__, array->type);
+    return;
+  }
+
+  json_obj_t * item = array->children;
+
+  while(item != NULL){
+    callback(item, user_data);
+    item = item->next_sibling;
+  }
+}
+
+void json_each_object_attribute(
+  json_obj_t * object,
+  void * user_data,
+  void (*callback)(json_obj_t * key, json_obj_t * value, void * user_data)
+) {
+  if(object->type != JSON_OBJECT){
+    printf("%d: unexpected type %d\n", __LINE__, object->type);
+    return;
+  }
+
+  json_obj_t * object_member = object->children;
+
+  while(object_member != NULL){
+    callback(object_member->children, object_member->children->next_sibling, user_data);
+    object_member = object_member->next_sibling;
+  }
+}
+
 
 json_obj_t * json_get_object_attribute(char * key, json_obj_t *obj) {
   if(obj == NULL || obj->children == NULL){
